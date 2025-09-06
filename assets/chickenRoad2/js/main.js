@@ -12,7 +12,7 @@ class ChickenRoadGame {
     this.modal = document.getElementById("modal");
     this.controls = document.getElementById("game-controls");
     this.balance = document.getElementById("balance");
-    this.modalBalance = document.getElementById("modal-balance");
+    // this.modalBalance = document.getElementById("modal-balance");
     this.modalMultiplier = document.getElementById("modal-multiplier");
     this.charMultiplier = document.getElementById("char-multiplier");
     this.charMultiplierElement = document.getElementById(
@@ -20,20 +20,6 @@ class ChickenRoadGame {
     );
     this.effectsContainer = document.getElementById("effects");
     this.effectsImage = document.getElementById("effects-image");
-
-    // Audio elements
-    this.spinSound = new Audio(
-      "../../assets/general/sound/chicken-road-2-button-click.mp3"
-    );
-    this.jumpSound = new Audio(
-      "../../assets/general/sound/chicken-road-2-jump.mp3"
-    );
-    this.cashOutSound = new Audio(
-      "../../assets/general/sound/chicken-road-2-cahout.mp3"
-    );
-    this.winSound = new Audio(
-      "../../assets/general/sound/chicken-road-2-win.mp3"
-    );
 
     // Game data
     this.rate = document.getElementById("rate").dataset.rate;
@@ -92,6 +78,7 @@ class ChickenRoadGame {
 
   initGame() {
     // Подгружаем валюту по IP
+    console.log("initGame вызван"); // 👈 проверка
     this.detectCurrency();
     this.showNextSector(this.currentStep);
     this.calculateFontSize(this.spinButton);
@@ -113,7 +100,7 @@ class ChickenRoadGame {
     this.cashButton.addEventListener("click", () => {
       this.showEffects();
       this.triggerShowModal();
-      this.playSound(this.cashOutSound);
+    //   this.playSound(this.cashOutSound);
       this.disableControls(10000);
     });
   }
@@ -137,7 +124,7 @@ class ChickenRoadGame {
 
   spin() {
     this.currentStep += 1;
-    this.playSound(this.spinSound);
+    // this.playSound(this.spinSound);
 
     if (
       this.isDesktop &&
@@ -148,7 +135,7 @@ class ChickenRoadGame {
       this.charMoves += 1;
     }
 
-    this.playSound(this.jumpSound, 100);
+    // this.playSound(this.jumpSound, 100);
     this.moveChar(this.currentStep);
     this.moveField(this.currentStep);
     this.disableControls(this.stepTime);
@@ -276,7 +263,7 @@ class ChickenRoadGame {
     const newBalance = (this.rate * multiplier * this.exchangeRate).toFixed(2);
 
     this.balance.innerText = newBalance;
-    this.modalBalance.innerText = newBalance;
+    // this.modalBalance.innerText = newBalance;
   }
 
   updateMultiplier(step) {
@@ -317,15 +304,15 @@ class ChickenRoadGame {
     this.modal.classList.add("is--active");
   }
 
-  playSound(sound, delay = 0) {
-    setTimeout(() => {
-      sound.muted = false;
-      sound.currentTime = 0;
-      sound.play().catch((error) => {
-        console.error("Ошибка при воспроизведении аудио: ", error);
-      });
-    }, delay);
-  }
+//   playSound(sound, delay = 0) {
+//     setTimeout(() => {
+//       sound.muted = false;
+//       sound.currentTime = 0;
+//       sound.play().catch((error) => {
+//         console.error("Ошибка при воспроизведении аудио: ", error);
+//       });
+//     }, delay);
+//   }
 
   triggerShowModal(delay = 0) {
     setTimeout(() => {
