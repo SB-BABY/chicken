@@ -1,0 +1,138 @@
+/* Секторы 8 и 9 */
+.game__sector.is--8 {
+    left: 290.25em;
+}
+
+.game__sector.is--9 {
+    left: 326.75em;
+}
+
+/* Машинки для 8 и 9 */
+.game__sector.is--8 .game__sector-car,
+.game__sector.is--9 .game__sector-car {
+    animation: 2s moveCar ease-in-out infinite;
+    animation-delay: 1.5s;
+}
+
+/* Красное модальное окно */
+.modal.modal--lose .modal__content {
+    border: 5px solid #d63636;
+    background: rgba(214, 54, 54, 0.7);
+}
+
+.modal.modal--lose .modal__title {
+    color: #fff;
+    font-size: 6.6em;
+}
+
+.game__sector.is--8 {
+    left: 290.25em;
+}
+
+.game__sector.is--9 {
+    left: 326.75em;
+}
+
+/* Сектор 8 – машина едет со своим таймингом */
+.game__sector.is--8 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 4.75s;
+    /* свой сдвиг */
+}
+
+/* Сектор 9 – машина едет иначе (чтобы отличалась) */
+.game__sector.is--9 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 6s;
+    /* другой сдвиг */
+}
+
+.game__sector.is--10 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector.is--11 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 9s;
+}
+
+.game__sector.is--12 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector.is--13 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 9s;
+}
+
+.game__sector.is--14 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector.is--15 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 9s;
+}
+.game__sector.is--16 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector.is--17 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 9s;
+}
+.game__sector.is--18 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector.is--19 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 9s;
+}
+.game__sector.is--20 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector.is--21 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 9s;
+}
+.game__sector.is--22 .game__sector-car {
+    animation: 4s moveCar ease-in-out infinite;
+    animation-delay: 7.5s;
+}
+
+.game__sector {
+    position: absolute;
+    top: 0;
+}
+
+.game__sector:nth-child(n) {
+    left: calc((var(--i)) * 36.5em);
+}
+
+/* Все активные сектора кроме 10-го */
+.game__sector.is--active:not(.is--10) .game__sector-car,
+.game__sector.is--finished:not(.is--10) .game__sector-car {
+    opacity: 0;
+    display: block;
+    animation: .5s showBarrier ease-in-out;
+    animation-fill-mode: forwards;
+    animation-delay: .25s;
+    bottom: 66em;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .bottom__section-button span {
+        font-size: 2.5em;
+    }
+}
+
+
