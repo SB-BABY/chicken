@@ -1,3 +1,5 @@
+
+
 class ChickenRoadGame {
   constructor() {
     this.game = document.getElementById("game");
@@ -35,7 +37,9 @@ class ChickenRoadGame {
 
     // Game data
     this.rate = document.getElementById("rate").dataset.rate;
-    this.multipliers = document.getElementById("rate").dataset.multipliers;
+    this.multipliers = document
+      .getElementById("rate")
+      .dataset.multipliers.split(",");
     this.sectorWidth = this.sectors[0].offsetWidth;
     this.charMoves = 0;
     this.currentStep = 0;
@@ -44,9 +48,51 @@ class ChickenRoadGame {
     this.stepTime = 700;
     this.spaceScrolled = window.innerWidth;
     this.isDesktop = window.innerWidth > 768;
+
+    // Валюта и курсы
+    this.currency = "€";
+    this.exchangeRate = 1;
+
+    
+  }
+
+  async detectCurrency() {
+    console.log("detectCurrency вызван");
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+
+      const countryCode = (data.country_code || "").toUpperCase();
+      console.log("DEBUG country_code:", countryCode);
+
+      if (countryCode === "US") {
+        this.currency = "$";
+        this.exchangeRate = 1.07;
+      } else if (countryCode === "GB") {
+        this.currency = "£";
+        this.exchangeRate = 0.86;
+      } else {
+        this.currency = "€";
+        this.exchangeRate = 1;
+      }
+
+      document
+        .querySelectorAll(
+          ".game-controls__cash-btn-inner span:last-child, .modal__balance-currency"
+        )
+        .forEach((el) => {
+          el.textContent = this.currency;
+        });
+
+      console.log("Определена страна:", countryCode, "Валюта:", this.currency);
+    } catch (err) {
+      console.error("Ошибка получения IP:", err);
+    }
   }
 
   initGame() {
+    // Подгружаем валюту по IP
+    this.detectCurrency();
     this.showNextSector(this.currentStep);
     this.calculateFontSize(this.spinButton);
     this.calculateFontSize(this.cashButton);
@@ -122,36 +168,22 @@ class ChickenRoadGame {
       }, this.stepTime);
     }
 
-    // === ЛОГИКА ДЛЯ СЕКТОРОВ 8 и 9 ===
-
-    // 8 сектор – обычный шаг (барьер + машина останавливается)
-    if (this.currentStep === 8) {
-      setTimeout(() => {
-        this.hideCharMultiplier();
-      }, this.stepTime / 2);
-      // больше ничего тут не делаем!
-    }
-
-    // Сектор 10 (проигрыш)
+    // === Проигрыш на секторе 10 ===
     if (this.currentStep === 10) {
       setTimeout(() => {
         const sector = this.sectors[this.currentStep - 1];
         const car = sector.querySelector(".game__sector-car");
 
-        // ⚡ Запускаем машину прямо сейчас (перезапуск анимации)
         car.style.animation = "none";
-        void car.offsetWidth; // хак для сброса
-        car.style.animation = "1s moveCar linear"; // машина едет один раз
+        void car.offsetWidth;
+        car.style.animation = "1s moveCar linear";
 
-        // меняем курицу на "раздавленную"
         this.char.querySelector("img").src =
           "assets/chickenRoad2/img/chicken-dead.png";
 
-        // показываем модалку проигрыша
         this.showLoseModal();
         this.disableControls(10000);
 
-        // ⚡ После завершения анимации возвращаем бесконечный цикл (машина продолжает кататься)
         car.addEventListener(
           "animationend",
           () => {
@@ -223,59 +255,36 @@ class ChickenRoadGame {
 
   moveChar(step) {
     this.char.classList.add("is--active");
-
-    // Убираем translateX для курицы, она всегда стоит на месте
     this.char.style.transform = `translateX(0)`;
-
     setTimeout(() => {
       this.char.classList.remove("is--active");
     }, this.stepTime);
   }
 
   moveField(step) {
-    // центрируем камеру так, чтобы сектор всегда смещался относительно курицы
     const translateX = this.sectorWidth * step;
     this.field.style.transform = `translateX(-${translateX}px)`;
   }
-
-  //   moveField(step) {
-  //     const translateX = this.sectorWidth * (step - this.charMoves);
-  //     this.field.style.transform = `translateX(-${translateX}px)`;
-  //     this.spaceScrolled += translateX;
-  //   }
-
-  //   moveChar(step) {
-  //     this.char.classList.add("is--active");
-
-  //     if (
-  //       step === this.firstStepIndex ||
-  //       step >= this.lastStepIndex ||
-  //       this.spaceScrolled > this.field.offsetWidth
-  //     ) {
-  //       const translateX = this.sectorWidth * this.charMoves;
-  //       this.char.style.transform = `translateX(${translateX}px)`;
-  //     }
-
-  //     setTimeout(() => {
-  //       this.char.classList.remove("is--active");
-  //     }, this.stepTime);
-  //   }
 
   setControlPanelActivated() {
     this.controls.classList.add("is--active");
   }
 
   updateBalance(step) {
-    const multipliers = this.multipliers.split(",");
-    const newBalance = (this.rate * multipliers[step - 1]).toFixed(2);
+    const idx = Math.max(0, step - 1);
+    const multiplier = parseFloat(this.multipliers[idx] || 1);
+    const newBalance = (this.rate * multiplier * this.exchangeRate).toFixed(2);
+
     this.balance.innerText = newBalance;
     this.modalBalance.innerText = newBalance;
   }
 
   updateMultiplier(step) {
-    const multipliers = this.multipliers.split(",");
-    this.modalMultiplier.innerText = multipliers[step - 1];
-    this.charMultiplier.innerText = multipliers[step - 1];
+    const idx = Math.max(0, step - 1);
+    const currentMultiplier = this.multipliers[idx] || 1;
+
+    this.modalMultiplier.innerText = currentMultiplier + "x";
+    this.charMultiplier.innerText = currentMultiplier + "x";
   }
 
   disableControls(time) {
