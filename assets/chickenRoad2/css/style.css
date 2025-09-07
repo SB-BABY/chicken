@@ -18,6 +18,7 @@
 .modal.modal--lose .modal__content {
     border: 5px solid #d63636;
     background: rgba(214, 54, 54, 0.7);
+    height: 58.7em;
 }
 
 .modal.modal--lose .modal__title {
