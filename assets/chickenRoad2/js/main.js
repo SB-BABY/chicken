@@ -1,5 +1,3 @@
-
-
 class ChickenRoadGame {
   constructor() {
     this.game = document.getElementById("game");
@@ -10,9 +8,10 @@ class ChickenRoadGame {
     this.cashButton = document.getElementById("cash-btn");
     this.winButton = document.getElementById("win-button-modal");
     this.modal = document.getElementById("modal");
+    this.modalLose = document.getElementById("modal-lose");
     this.controls = document.getElementById("game-controls");
     this.balance = document.getElementById("balance");
-    // this.modalBalance = document.getElementById("modal-balance");
+    this.modalBalance = document.getElementById("modal-balance");
     this.modalMultiplier = document.getElementById("modal-multiplier");
     this.charMultiplier = document.getElementById("char-multiplier");
     this.charMultiplierElement = document.getElementById(
@@ -35,50 +34,147 @@ class ChickenRoadGame {
     this.spaceScrolled = window.innerWidth;
     this.isDesktop = window.innerWidth > 768;
 
-    // Валюта и курсы
+    // Валюта и язык
     this.currency = "€";
     this.exchangeRate = 1;
+    this.lang = "RU";
 
-    
+    // Переводы
+    this.translations = {
+      US: {
+        currency: "$",
+        play: "Play",
+        cashOut: "Cash Out",
+        join: "Join Real Game",
+        balance: "Balance",
+        win: "You win!",
+        lose: "You lost!",
+        bonus: "Register and get your personal bonus",
+        difficulty: "Difficulty",
+        chance: "Chance of being shot down",
+        levels: ["Easy", "Medium", "Hard", "Hardcore"],
+      },
+      GB: {
+        currency: "£",
+        play: "Spin",
+        cashOut: "Withdraw",
+        join: "Join Real Game",
+        balance: "Balance",
+        win: "You win!",
+        lose: "You lost!",
+        bonus: "Register and get your personal bonus",
+        difficulty: "Difficulty",
+        chance: "Chance of being shot down",
+        levels: ["Easy", "Medium", "Hard", "Hardcore"],
+      },
+      RU: {
+        currency: "€",
+        play: "Играть",
+        cashOut: "Забрать",
+        join: "Начать игру",
+        balance: "Баланс",
+        win: "Вы выиграли!",
+        lose: "Вы проиграли!",
+        bonus: "Пройди регистрацию и получи свой персональный бонус",
+        difficulty: "Сложность",
+        chance: "Шанс быть сбитым",
+        levels: ["Легко", "Средне", "Тяжело", "Хардкор"],
+      },
+    };
   }
 
   async detectCurrency() {
-    console.log("detectCurrency вызван");
     try {
       const res = await fetch("https://ipapi.co/json/");
       const data = await res.json();
-
       const countryCode = (data.country_code || "").toUpperCase();
-      console.log("DEBUG country_code:", countryCode);
 
       if (countryCode === "US") {
-        this.currency = "$";
-        this.exchangeRate = 1.07;
+        this.lang = "US";
       } else if (countryCode === "GB") {
-        this.currency = "£";
-        this.exchangeRate = 0.86;
+        this.lang = "GB";
       } else {
-        this.currency = "€";
-        this.exchangeRate = 1;
+        this.lang = "RU";
       }
 
-      document
-        .querySelectorAll(
-          ".game-controls__cash-btn-inner span:last-child, .modal__balance-currency"
-        )
-        .forEach((el) => {
-          el.textContent = this.currency;
-        });
-
-      console.log("Определена страна:", countryCode, "Валюта:", this.currency);
+      this.applyTranslations();
     } catch (err) {
       console.error("Ошибка получения IP:", err);
+      this.applyTranslations(); // fallback
     }
   }
 
+  applyTranslations() {
+    const t = this.translations[this.lang];
+    this.currency = t.currency;
+
+    // Кнопки
+    if (this.spinButton) {
+      const span = this.spinButton.querySelector("#go-btn-default-text");
+      if (span) span.textContent = t.play;
+    }
+    if (this.cashButton) {
+      const span = this.cashButton.querySelector("span");
+      if (span) span.textContent = t.cashOut;
+    }
+    if (this.winButton) {
+      const span = this.winButton.querySelector("span");
+      if (span) span.textContent = t.join;
+    }
+
+    // Тексты в модалках
+    const winModalTitle = document.querySelector("#modal .modal__title span");
+    if (winModalTitle) winModalTitle.textContent = t.win;
+
+    const loseModalTitle = document.querySelector(
+      "#modal-lose .modal__title span"
+    );
+    if (loseModalTitle) loseModalTitle.textContent = t.lose;
+
+    // Валюта
+    document.querySelectorAll(".modal__balance-currency").forEach((el) => {
+      el.textContent = this.currency;
+    });
+    document
+      .querySelectorAll(".game-controls__defaults-item-currency")
+      .forEach((el) => {
+        el.textContent = this.currency;
+      });
+
+    // Бонусный текст (только отдельные блоки)
+    const bonusBlocks = document.querySelectorAll(
+      "#modal .modal__balance, #modal-lose .modal__balance"
+    );
+    bonusBlocks.forEach((block) => {
+      // если внутри блока НЕТ span с id (modal-balance, modal-multiplier, etc.) и НЕТ modal__balance-currency → значит это бонус
+      const spans = block.querySelectorAll("span");
+      if (
+        spans.length === 1 &&
+        !spans[0].id &&
+        !spans[0].classList.contains("modal__balance-currency")
+      ) {
+        spans[0].textContent = t.bonus;
+      }
+    });
+
+    // Difficulty блок
+    const diff = document.querySelector(".game-controls__headings-dif");
+    if (diff) diff.textContent = t.difficulty;
+
+    const chance = document.querySelector(".game-controls__headings-chance");
+    if (chance) chance.textContent = t.chance;
+
+    const levels = document.querySelectorAll(".game-controls__switcher-item");
+    levels.forEach((el, i) => {
+      if (t.levels[i]) el.textContent = t.levels[i];
+    });
+
+    // Баланс в кнопке Cash Out
+    const cashBtnCurrency = document.querySelector(".cash-btn-currency");
+    if (cashBtnCurrency) cashBtnCurrency.textContent = this.currency;
+  }
+
   initGame() {
-    // Подгружаем валюту по IP
-    console.log("initGame вызван"); // 👈 проверка
     this.detectCurrency();
     this.showNextSector(this.currentStep);
     this.calculateFontSize(this.spinButton);
@@ -100,11 +196,12 @@ class ChickenRoadGame {
     this.cashButton.addEventListener("click", () => {
       this.showEffects();
       this.triggerShowModal();
-    //   this.playSound(this.cashOutSound);
+      this.playSound(this.cashOutSound);
       this.disableControls(10000);
     });
   }
 
+  // === остальной код игры (без изменений) ===
   initSpin() {
     if (
       window.isMobile &&
@@ -124,7 +221,6 @@ class ChickenRoadGame {
 
   spin() {
     this.currentStep += 1;
-    // this.playSound(this.spinSound);
 
     if (
       this.isDesktop &&
@@ -135,7 +231,6 @@ class ChickenRoadGame {
       this.charMoves += 1;
     }
 
-    // this.playSound(this.jumpSound, 100);
     this.moveChar(this.currentStep);
     this.moveField(this.currentStep);
     this.disableControls(this.stepTime);
@@ -155,7 +250,6 @@ class ChickenRoadGame {
       }, this.stepTime);
     }
 
-    // === Проигрыш на секторе 10 ===
     if (this.currentStep === 10) {
       setTimeout(() => {
         const sector = this.sectors[this.currentStep - 1];
@@ -187,7 +281,6 @@ class ChickenRoadGame {
     options = { threshold: 25, step: 0.03, minPercent: 0.6 }
   ) {
     if (!element) return;
-
     const spans = element.querySelectorAll("span");
     if (!spans) return;
 
@@ -203,16 +296,13 @@ class ChickenRoadGame {
         originalFontSize - lengthDifference * (originalFontSize * options.step),
         minFontSize
       );
-
       span.style.fontSize = `${adjustedFontSize}px`;
     });
   }
 
   showNextSector(step) {
     const sector = this.sectors[step];
-    if (sector) {
-      sector.classList.add("is--next");
-    }
+    if (sector) sector.classList.add("is--next");
   }
 
   showActiveSector(step) {
@@ -261,17 +351,15 @@ class ChickenRoadGame {
     const idx = Math.max(0, step - 1);
     const multiplier = parseFloat(this.multipliers[idx] || 1);
     const newBalance = (this.rate * multiplier * this.exchangeRate).toFixed(2);
-
     this.balance.innerText = newBalance;
-    // this.modalBalance.innerText = newBalance;
+    this.modalBalance.innerText = newBalance;
   }
 
   updateMultiplier(step) {
     const idx = Math.max(0, step - 1);
     const currentMultiplier = this.multipliers[idx] || 1;
-
-    this.modalMultiplier.innerText = currentMultiplier + "x";
-    this.charMultiplier.innerText = currentMultiplier + "x";
+    this.modalMultiplier.innerText = currentMultiplier;
+    this.charMultiplier.innerText = currentMultiplier;
   }
 
   disableControls(time) {
@@ -285,13 +373,11 @@ class ChickenRoadGame {
 
   showEffects(delay = 0, duration = 1500) {
     this.effectsContainer.classList.add("visible");
-
     setTimeout(() => {
       const effectElement = document.createElement("div");
       effectElement.style.backgroundImage = `url(${this.effectsImage.src})`;
       effectElement.classList.add("effects__block");
       this.effectsContainer.appendChild(effectElement);
-
       setTimeout(() => {
         this.effectsContainer.classList.remove("visible");
         this.effectsContainer.classList.add("hidden");
@@ -304,16 +390,6 @@ class ChickenRoadGame {
     this.modal.classList.add("is--active");
   }
 
-//   playSound(sound, delay = 0) {
-//     setTimeout(() => {
-//       sound.muted = false;
-//       sound.currentTime = 0;
-//       sound.play().catch((error) => {
-//         console.error("Ошибка при воспроизведении аудио: ", error);
-//       });
-//     }, delay);
-//   }
-
   triggerShowModal(delay = 0) {
     setTimeout(() => {
       window.dispatchEvent(new Event("placementOpenModal"));
@@ -322,8 +398,7 @@ class ChickenRoadGame {
 
   showLoseModal() {
     document.body.classList.add("is--modal-open");
-    const loseModal = document.getElementById("modal-lose");
-    loseModal.classList.add("is--active");
+    this.modalLose.classList.add("is--active");
   }
 }
 
