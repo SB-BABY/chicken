@@ -36,12 +36,12 @@ class ChickenRoadGame {
 
     // Валюта и язык
     this.currency = "€";
-    this.exchangeRate = 1;
-    this.lang = "RU";
+    this.lang = "EU"; // дефолт
 
     // Переводы
     this.translations = {
       US: {
+        countries: ["US", "CA", "AU"], // долларовые страны
         currency: "$",
         play: "Play",
         cashOut: "Cash Out",
@@ -55,6 +55,7 @@ class ChickenRoadGame {
         levels: ["Easy", "Medium", "Hard", "Hardcore"],
       },
       GB: {
+        countries: ["GB", "IE", "NZ"], // фунтовые страны
         currency: "£",
         play: "Spin",
         cashOut: "Withdraw",
@@ -67,18 +68,9 @@ class ChickenRoadGame {
         chance: "Chance of being shot down",
         levels: ["Easy", "Medium", "Hard", "Hardcore"],
       },
-      RU: {
+      EU: {
+        countries: ["DE", "FR", "ES"], // еврозона (дефолт)
         currency: "€",
-        // play: "Играть",
-        // cashOut: "Забрать",
-        // join: "Начать игру",
-        // balance: "Баланс",
-        // win: "Вы выиграли!",
-        // lose: "Вы проиграли!",
-        // bonus: "Пройди регистрацию и получи свой персональный бонус",
-        // difficulty: "Сложность",
-        // chance: "Шанс быть сбитым",
-        // levels: ["Легко", "Средне", "Тяжело", "Хардкор"],
         play: "Play",
         cashOut: "Cash Out",
         join: "Join Real Game",
@@ -99,12 +91,15 @@ class ChickenRoadGame {
       const data = await res.json();
       const countryCode = (data.country_code || "").toUpperCase();
 
-      if (countryCode === "US") {
+      console.log("Определён код страны:", countryCode);
+
+      // определяем язык/валюту
+      if (this.translations.US.countries.includes(countryCode)) {
         this.lang = "US";
-      } else if (countryCode === "GB") {
+      } else if (this.translations.GB.countries.includes(countryCode)) {
         this.lang = "GB";
       } else {
-        this.lang = "RU";
+        this.lang = "EU"; // по умолчанию евро
       }
 
       this.applyTranslations();
@@ -151,12 +146,11 @@ class ChickenRoadGame {
         el.textContent = this.currency;
       });
 
-    // Бонусный текст (только отдельные блоки)
+    // Бонусный текст
     const bonusBlocks = document.querySelectorAll(
       "#modal .modal__balance, #modal-lose .modal__balance"
     );
     bonusBlocks.forEach((block) => {
-      // если внутри блока НЕТ span с id (modal-balance, modal-multiplier, etc.) и НЕТ modal__balance-currency → значит это бонус
       const spans = block.querySelectorAll("span");
       if (
         spans.length === 1 &&
@@ -179,9 +173,16 @@ class ChickenRoadGame {
       if (t.levels[i]) el.textContent = t.levels[i];
     });
 
-    // Баланс в кнопке Cash Out
-    const cashBtnCurrency = document.querySelector(".cash-btn-currency");
-    if (cashBtnCurrency) cashBtnCurrency.textContent = this.currency;
+    // Баланс в кнопке Cash Out (чтобы был $/€/£)
+    const cashBtnInner = document.querySelector(
+      "#cash-btn .game-controls__cash-btn-inner"
+    );
+    if (cashBtnInner) {
+      const balanceSpan = cashBtnInner.querySelector("#balance");
+      if (balanceSpan && balanceSpan.nextSibling) {
+        balanceSpan.nextSibling.textContent = " " + this.currency;
+      }
+    }
   }
 
   initGame() {
@@ -206,12 +207,11 @@ class ChickenRoadGame {
     this.cashButton.addEventListener("click", () => {
       this.showEffects();
       this.triggerShowModal();
-      this.playSound(this.cashOutSound);
       this.disableControls(10000);
     });
   }
 
-  // === остальной код игры (без изменений) ===
+  // ==== остальной код игры без изменений ====
   initSpin() {
     if (
       window.isMobile &&
@@ -360,7 +360,7 @@ class ChickenRoadGame {
   updateBalance(step) {
     const idx = Math.max(0, step - 1);
     const multiplier = parseFloat(this.multipliers[idx] || 1);
-    const newBalance = (this.rate * multiplier * this.exchangeRate).toFixed(2);
+    const newBalance = (this.rate * multiplier).toFixed(2);
     this.balance.innerText = newBalance;
     this.modalBalance.innerText = newBalance;
   }
