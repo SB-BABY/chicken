@@ -35,52 +35,123 @@ class ChickenRoadGame {
     this.isDesktop = window.innerWidth > 768;
 
     // Валюта и язык
-    this.currency = "€";
-    this.lang = "EU"; // дефолт
+    this.currency = "£"; // дефолт — Великобритания
+    this.lang = "GB";
 
-    // Переводы
+    // Сопоставление стран
     this.translations = {
-      US: {
-        countries: ["US", "CA", "AU"], // долларовые страны
-        currency: "$",
+      GB: { countries: ["GB"], currency: "£", lang: "EN" }, // Великобритания
+      IE: { countries: ["IE"], currency: "€", lang: "EN" }, // Ирландия
+      CA: { countries: ["CA"], currency: "$", lang: "FR" }, // Канада
+      AU: { countries: ["AU"], currency: "$", lang: "EN" }, // Австралия
+      DE: { countries: ["DE"], currency: "€", lang: "DE" }, // Германия
+      CH: { countries: ["CH"], currency: "€", lang: "DE" }, // Швейцария
+      FR: { countries: ["FR"], currency: "€", lang: "FR" }, // Франция
+      IT: { countries: ["IT"], currency: "€", lang: "IT" }, // Италия
+      PT: { countries: ["PT"], currency: "€", lang: "PT" }, // Португалия
+      PL: { countries: ["PL"], currency: "zł", lang: "PL" }, // Польша
+      SK: { countries: ["SK"], currency: "€", lang: "SK" }, // Словакия
+      NL: { countries: ["NL"], currency: "€", lang: "NL" }, // Нидерланды
+      BE: { countries: ["BE"], currency: "€", lang: "NL" }, // Бельгия
+    };
+
+    // Тексты
+    this.texts = {
+      // Английский — Великобритания, Ирландия, Австралия
+      EN: {
         play: "Play",
         cashOut: "Cash Out",
         join: "Join Real Game",
-        balance: "Balance",
         win: "You win!",
         lose: "You lost!",
         bonus: "Register and get your personal bonus",
         difficulty: "Difficulty",
-        chance: "Chance of being shot down",
+        chance: "Chance of being hit",
         levels: ["Easy", "Medium", "Hard", "Hardcore"],
       },
-      GB: {
-        countries: ["GB", "IE", "NZ"], // фунтовые страны
-        currency: "£",
-        play: "Spin",
-        cashOut: "Withdraw",
-        join: "Join Real Game",
-        balance: "Balance",
-        win: "You win!",
-        lose: "You lost!",
-        bonus: "Register and get your personal bonus",
-        difficulty: "Difficulty",
-        chance: "Chance of being shot down",
-        levels: ["Easy", "Medium", "Hard", "Hardcore"],
+      // Франция, Канада
+      FR: {
+        play: "Jouer",
+        cashOut: "Encaisser",
+        join: "Rejoindre le vrai jeu",
+        win: "Vous avez gagné !",
+        lose: "Vous avez perdu !",
+        bonus: "Inscrivez-vous et obtenez votre bonus personnel",
+        difficulty: "Difficulté",
+        chance: "Chance d'être renversé",
+        levels: ["Facile", "Moyen", "Difficile", "Hardcore"],
       },
-      EU: {
-        countries: ["DE", "FR", "ES"], // еврозона (дефолт)
-        currency: "€",
-        play: "Play",
-        cashOut: "Cash Out",
-        join: "Join Real Game",
-        balance: "Balance",
-        win: "You win!",
-        lose: "You lost!",
-        bonus: "Register and get your personal bonus",
-        difficulty: "Difficulty",
-        chance: "Chance of being shot down",
-        levels: ["Easy", "Medium", "Hard", "Hardcore"],
+      // Германия, Швейцария
+      DE: {
+        play: "Spielen",
+        cashOut: "Auszahlen",
+        join: "Am echten Spiel teilnehmen",
+        win: "Du hast gewonnen!",
+        lose: "Du hast verloren!",
+        bonus: "Registriere dich und erhalte deinen Bonus",
+        difficulty: "Schwierigkeit",
+        chance: "Chance, überfahren zu werden",
+        levels: ["Leicht", "Mittel", "Schwer", "Hardcore"],
+      },
+      // Италия
+      IT: {
+        play: "Gioca",
+        cashOut: "Ritira",
+        join: "Unisciti al gioco reale",
+        win: "Hai vinto!",
+        lose: "Hai perso!",
+        bonus: "Registrati e ottieni il tuo bonus personale",
+        difficulty: "Difficoltà",
+        chance: "Probabilità di essere investito",
+        levels: ["Facile", "Medio", "Difficile", "Hardcore"],
+      },
+      // Португалия
+      PT: {
+        play: "Jogar",
+        cashOut: "Retirar",
+        join: "Junte-se ao jogo real",
+        win: "Você ganhou!",
+        lose: "Você perdeu!",
+        bonus: "Registe-se e obtenha o seu bónus pessoal",
+        difficulty: "Dificuldade",
+        chance: "Probabilidade de ser atropelado",
+        levels: ["Fácil", "Médio", "Difícil", "Hardcore"],
+      },
+      // Польша
+      PL: {
+        play: "Graj",
+        cashOut: "Wypłać",
+        join: "Dołącz do prawdziwej gry",
+        win: "Wygrałeś!",
+        lose: "Przegrałeś!",
+        bonus: "Zarejestruj się i odbierz swój bonus",
+        difficulty: "Poziom trudności",
+        chance: "Szansa na potrącenie",
+        levels: ["Łatwy", "Średni", "Trudny", "Hardcore"],
+      },
+      // Словакия
+      SK: {
+        play: "Hrať",
+        cashOut: "Vybrať",
+        join: "Pripojte sa k skutočnej hre",
+        win: "Vyhral si!",
+        lose: "Prehral si!",
+        bonus: "Zaregistrujte sa a získajte svoj bonus",
+        difficulty: "Obtiažnosť",
+        chance: "Šanca byť zrazený",
+        levels: ["Ľahké", "Stredné", "Ťažké", "Hardcore"],
+      },
+      // Нидерланды, Бельгия
+      NL: {
+        play: "Spelen",
+        cashOut: "Opnemen",
+        join: "Doe mee aan het echte spel",
+        win: "Je hebt gewonnen!",
+        lose: "Je hebt verloren!",
+        bonus: "Registreer en ontvang je persoonlijke bonus",
+        difficulty: "Moeilijkheidsgraad",
+        chance: "Kans om aangereden te worden",
+        levels: ["Makkelijk", "Gemiddeld", "Moeilijk", "Hardcore"],
       },
     };
   }
@@ -90,30 +161,41 @@ class ChickenRoadGame {
       const res = await fetch("https://ipapi.co/json/");
       const data = await res.json();
       const countryCode = (data.country_code || "").toUpperCase();
+      // tets
+      // const countryCode = "PL";
 
-      console.log("Определён код страны:", countryCode);
+      // console.log("Определён код страны:", countryCode);
 
-      // определяем язык/валюту
-      if (this.translations.US.countries.includes(countryCode)) {
-        this.lang = "US";
-      } else if (this.translations.GB.countries.includes(countryCode)) {
+      let found = false;
+      for (const key in this.translations) {
+        if (this.translations[key].countries.includes(countryCode)) {
+          this.lang = key;
+          this.currency = this.translations[key].currency;
+          this.currentTexts = this.texts[this.translations[key].lang];
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
         this.lang = "GB";
-      } else {
-        this.lang = "EU"; // по умолчанию евро
+        this.currency = "£";
+        this.currentTexts = this.texts["EN"];
       }
 
       this.applyTranslations();
     } catch (err) {
       console.error("Ошибка получения IP:", err);
-      this.applyTranslations(); // fallback
+      this.lang = "GB";
+      this.currency = "£";
+      this.currentTexts = this.texts["EN"];
+      this.applyTranslations();
     }
   }
 
   applyTranslations() {
-    const t = this.translations[this.lang];
-    this.currency = t.currency;
+    const t = this.currentTexts;
 
-    // Кнопки
     if (this.spinButton) {
       const span = this.spinButton.querySelector("#go-btn-default-text");
       if (span) span.textContent = t.play;
@@ -127,7 +209,6 @@ class ChickenRoadGame {
       if (span) span.textContent = t.join;
     }
 
-    // Тексты в модалках
     const winModalTitle = document.querySelector("#modal .modal__title span");
     if (winModalTitle) winModalTitle.textContent = t.win;
 
@@ -136,7 +217,6 @@ class ChickenRoadGame {
     );
     if (loseModalTitle) loseModalTitle.textContent = t.lose;
 
-    // Валюта
     document.querySelectorAll(".modal__balance-currency").forEach((el) => {
       el.textContent = this.currency;
     });
@@ -146,7 +226,6 @@ class ChickenRoadGame {
         el.textContent = this.currency;
       });
 
-    // Бонусный текст
     const bonusBlocks = document.querySelectorAll(
       "#modal .modal__balance, #modal-lose .modal__balance"
     );
@@ -161,7 +240,6 @@ class ChickenRoadGame {
       }
     });
 
-    // Difficulty блок
     const diff = document.querySelector(".game-controls__headings-dif");
     if (diff) diff.textContent = t.difficulty;
 
@@ -173,7 +251,6 @@ class ChickenRoadGame {
       if (t.levels[i]) el.textContent = t.levels[i];
     });
 
-    // Баланс в кнопке Cash Out (чтобы был $/€/£)
     const cashBtnInner = document.querySelector(
       "#cash-btn .game-controls__cash-btn-inner"
     );
@@ -211,7 +288,6 @@ class ChickenRoadGame {
     });
   }
 
-  // ==== остальной код игры без изменений ====
   initSpin() {
     if (
       window.isMobile &&
