@@ -162,9 +162,9 @@ class ChickenRoadGame {
       const data = await res.json();
       const countryCode = (data.country_code || "").toUpperCase();
       // tets
-      // const countryCode = "PL";
+      //const countryCode = "PL";
 
-      // console.log("Определён код страны:", countryCode);
+      console.log("Определён код страны:", countryCode);
 
       let found = false;
       for (const key in this.translations) {
